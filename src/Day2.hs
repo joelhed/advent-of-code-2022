@@ -1,5 +1,7 @@
 module Day2 (day2) where
 
+import Control.Monad (join)
+import Data.Bifunctor (bimap)
 import Lib
 
 data Play = Rock | Paper | Scissors deriving (Eq)
@@ -16,11 +18,11 @@ charToPlay char = case char of
     'Z' -> Scissors
     _   -> error "unrecognised play"
 
+pair :: (a -> b, a -> c) -> a -> (b, c)
+pair (f, g) x = (f x, g x)
+
 parseRound :: String -> Round
-parseRound row =
-    (charToPlay opponent , charToPlay me)
-    where opponent = head row
-          me       = last row
+parseRound = join bimap charToPlay . pair (head, last)
 
 playScore :: Play -> Int
 playScore play = case play of
@@ -43,9 +45,16 @@ winScore result = case result of
     Loss -> 0
 
 calculateScore :: Round -> Int
-calculateScore round = (winScore $ didWin round) + (playScore $ snd round)
+-- calculateScore round = (winScore $ didWin round) + (playScore $ snd round)
+
+-- Pont-free version
+-- This is less readable than the pointful version above, and is equally long.
+-- If it weren't just for practice, I'd use the pointful version.
+calculateScore = join $ (flip $ (+) . winScore . didWin) . playScore . snd
 
 -- Part 2
+
+type ExpectedRound = (Play, Result)
 
 charToResult :: Char -> Result
 charToResult char = case char of
@@ -54,13 +63,10 @@ charToResult char = case char of
     'Z' -> Win
     _   -> error "unexpected result"
 
-parseExpectedResult :: String -> (Play, Result)
-parseExpectedResult row =
-    (charToPlay opponent, charToResult expected)
-    where opponent = head row
-          expected = last row
+parseExpectedRound :: String -> ExpectedRound
+parseExpectedRound = pair (charToPlay . head, charToResult . last)
 
-findRightPlay :: (Play, Result) -> Play
+findRightPlay :: ExpectedRound -> Play
 findRightPlay expected = case expected of
     (opponent, Draw) -> opponent
     (Rock, Win)      -> Paper
@@ -70,12 +76,12 @@ findRightPlay expected = case expected of
     (Paper, Loss)    -> Rock
     (Scissors, Loss) -> Paper
 
-roundFromExpectedResult :: (Play, Result) -> Round
-roundFromExpectedResult expected = (fst expected, findRightPlay expected)
+roundFromExpectedRound :: ExpectedRound -> Round
+roundFromExpectedRound = pair (fst, findRightPlay)
 
 day2 :: Day
 day2 = Day { part1 = let lineToScore = calculateScore . parseRound
                      in show . sum . map lineToScore . lines
-           , part2 = let lineToScore = calculateScore . roundFromExpectedResult . parseExpectedResult
+           , part2 = let lineToScore = calculateScore . roundFromExpectedRound . parseExpectedRound
                      in Just $ show . sum . map lineToScore . lines
            }
