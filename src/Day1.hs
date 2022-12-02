@@ -41,13 +41,13 @@ _threeLargestWithRec input =
 threeLargest :: [Int] -> [Int]
 threeLargest = _threeLargestWithRec
 
--- Turns out, both solutions take approximately 0,26 seconds to complete.
--- No practical difference.
+-- Turns out, both solutions take approximately 0,26 seconds to complete on my machine.
+-- I.e. no practical difference.
 
 thisPart2 :: String -> String
 thisPart2 = show . sum . threeLargest . map sum . getElfInventories
 
 day1 :: Day
-day1 = Day { part1 = thisPart1 --maximum . map (sum . (map read)) . splitAtItem "" . lines
+day1 = Day { part1 = thisPart1
            , part2 = (Just thisPart2)
            }
