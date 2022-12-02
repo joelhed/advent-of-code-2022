@@ -42,7 +42,32 @@ winScore Loss = 0
 calculateScore :: Round -> Int
 calculateScore round = (winScore $ didWin round) + (playScore $ snd round)
 
+-- Part 2
+charToResult :: Char -> Result
+charToResult 'X' = Loss
+charToResult 'Y' = Draw
+charToResult 'Z' = Win
+charToResult _ = error "unexpected result"
+
+parseExpectedResult :: String -> (Play, Result)
+parseExpectedResult row =
+    (charToPlay opponent, charToResult expected)
+    where opponent = head row
+          expected = last row
+
+findRightPlay :: (Play, Result) -> Play
+findRightPlay (opponent, Draw) = opponent
+findRightPlay (Rock, Win)      = Paper
+findRightPlay (Paper, Win)     = Scissors
+findRightPlay (Scissors, Win)  = Rock
+findRightPlay (Rock, Loss)     = Scissors
+findRightPlay (Paper, Loss)    = Rock
+findRightPlay (Scissors, Loss) = Paper
+
+roundFromExpectedResult :: (Play, Result) -> Round
+roundFromExpectedResult expected = (fst expected, findRightPlay expected)
+
 day2 :: Day
 day2 = Day { part1 = show . sum . map (calculateScore . parseRound) . lines
-           , part2 = Nothing
+           , part2 = Just $ show . sum . map (calculateScore . roundFromExpectedResult . parseExpectedResult) . lines
            }
