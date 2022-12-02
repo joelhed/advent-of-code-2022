@@ -31,7 +31,7 @@ playScore play = case play of
     Scissors -> 3
 
 didWin :: Round -> Result
-didWin round = case round of
+didWin round_ = case round_ of
     (Rock, Paper)                   -> Win
     (Paper, Scissors)               -> Win
     (Scissors, Rock)                -> Win
