@@ -4,10 +4,12 @@ import System.Environment
 
 import Lib
 import Day1
+import Day2
 
 
 days :: [Day]
 days = [ day1
+       , day2
        ]
 
 getLatestPart :: Day -> Part
