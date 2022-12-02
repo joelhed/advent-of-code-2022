@@ -1,50 +1,44 @@
 module Main (main) where
 
 import System.Environment
+import Data.Maybe (fromJust)
 
 import Lib
 import Day1
 import Day2
-
 
 days :: [Day]
 days = [ day1
        , day2
        ]
 
-getLatestPart :: Day -> Part
-getLatestPart day =
-    case part2 day of
-        (Just part) -> part
-        Nothing     -> part1 day
+getDayFromDaySpec :: DaySpec -> Day
+getDayFromDaySpec = (days !!) . (subtract 1)
 
-getPartByNum :: Integer -> Day -> Part
-getPartByNum 1 day = part1 day
-getPartByNum 2 day =
-    case part2 day of
-        (Just part) -> part
-        Nothing     -> error "no such part exists"
-getPartByNum _ _ = error "no such part exists"
+getPartFromDayPartSpec :: DayPartSpec -> Maybe Part
+getPartFromDayPartSpec spec =
+    (getPartFromPartSpec $ partSpec spec) day
+    where day = getDayFromDaySpec $ daySpec spec
 
+parseDayPartSpec :: [String] -> DayPartSpec
+parseDayPartSpec args = case args of
+    []                 -> let daySp = (length days)
+                          in DayPartSpec daySp $ getLatestPartSpec $ getDayFromDaySpec daySp
+    [dayStr]           -> let daySp = (read dayStr)
+                          in DayPartSpec daySp $ getLatestPartSpec $ getDayFromDaySpec daySp
+    (dayStr:partStr:_) -> let daySp = (read dayStr)
+                          in DayPartSpec daySp $ getPartSpecByNum  $ read partStr
 
-getPartOfDay :: [String] -> Part
-getPartOfDay [] =
-    getLatestPart $ last days
-
-getPartOfDay [dayStr] =
-    let dayIdx = ((read dayStr) - 1)
-    in 
-        getLatestPart $ days !! dayIdx
-
-getPartOfDay (dayStr:partStr:_) =
-    let
-        dayIdx = (read dayStr) - 1
-        day = days !! dayIdx
-        partNum = read partStr
-    in getPartByNum partNum $ day
+downloadInput :: IO String
+downloadInput = error "no worky"
 
 main :: IO ()
 main = do
     args <- getArgs
-    input <- getContents
-    putStrLn $ getPartOfDay args input
+    if args /= [] && head args == "--download" then do
+        input <- downloadInput
+        return ()
+    else do
+        input <- getContents
+        let part = fromJust $ getPartFromDayPartSpec $ parseDayPartSpec args
+        putStrLn $ part input
