@@ -17,4 +17,8 @@ $ stack exec advent-of-code-y2022-exe 1
 
 # Or you can specify the part as well
 $ stack exec advent-of-code-y2022-exe 1 1
+
+# You can also specify an option to download your input from the aoc server
+# This requires you to put your session cookie in a file called `session_id`
+$ stack exec advent-of-code-y2022-exe --download
 ```

@@ -21,6 +21,10 @@ description:         Please see the README on GitHub at <https://github.com/joel
 
 dependencies:
 - base >= 4.7 && < 5
+- http-client
+- http-client-tls
+- http-conduit
+- bytestring
 
 ghc-options:
 - -Wall
