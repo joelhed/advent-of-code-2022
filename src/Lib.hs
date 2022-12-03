@@ -28,8 +28,8 @@ getPartFromPartSpec Part2 = part2
 getLatestPartSpec :: Day -> PartSpec
 getLatestPartSpec day =
     case part2 day of
-        (Just part) -> Part2
-        Nothing     -> Part1
+        (Just _) -> Part2
+        Nothing  -> Part1
 
 getPartSpecByNum :: Int -> PartSpec
 getPartSpecByNum 1 = Part1
