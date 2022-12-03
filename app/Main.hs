@@ -6,10 +6,12 @@ import Data.Maybe (fromJust)
 import Lib
 import Day1
 import Day2
+import Day3
 
 days :: [Day]
 days = [ day1
        , day2
+       , day3
        ]
 
 getDayFromDaySpec :: DaySpec -> Day
@@ -35,10 +37,12 @@ downloadInput = error "no worky"
 main :: IO ()
 main = do
     args <- getArgs
-    if args /= [] && head args == "--download" then do
-        input <- downloadInput
-        return ()
-    else do
-        input <- getContents
-        let part = fromJust $ getPartFromDayPartSpec $ parseDayPartSpec args
-        putStrLn $ part input
+    (dayPartSpecArgs, input) <-
+        if args /= [] && head args == "--download" then do
+            input <- downloadInput
+            return (tail args, input)
+        else do
+            input <- getContents
+            return (args, input)
+    let part = fromJust $ getPartFromDayPartSpec $ parseDayPartSpec dayPartSpecArgs
+    putStrLn $ part input
