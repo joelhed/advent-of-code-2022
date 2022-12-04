@@ -2,18 +2,10 @@ module Day1 (day1) where
 
 import Lib
 import Data.List (sort, insert)
-
--- Split a list at the appearance of a given item. This removes said item.
-splitAtItem :: (Eq a) => a -> [a] -> [[a]]
-splitAtItem _ [] = []
-splitAtItem item xs =
-    let (group, rest) = break (== item) xs
-    in group:case rest of
-        [] -> []
-        _  -> splitAtItem item (tail rest)
+import Utils (splitOn)
 
 getElfInventories :: String -> [[Int]]
-getElfInventories = map (map read) . splitAtItem "" . lines
+getElfInventories = map (map read) . splitOn "" . lines
 
 thisPart1 :: String -> String
 thisPart1 = show . maximum . map sum . getElfInventories

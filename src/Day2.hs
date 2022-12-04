@@ -3,6 +3,7 @@ module Day2 (day2) where
 import Control.Monad (join)
 import Data.Bifunctor (bimap)
 import Lib
+import Utils (pair)
 
 data Play = Rock | Paper | Scissors deriving (Eq)
 data Result = Win | Loss | Draw
@@ -17,9 +18,6 @@ charToPlay char = case char of
     'Y' -> Paper
     'Z' -> Scissors
     _   -> error "unrecognised play"
-
-pair :: (a -> b, a -> c) -> a -> (b, c)
-pair (f, g) x = (f x, g x)
 
 parseRound :: String -> Round
 parseRound = join bimap charToPlay . pair (head, last)
