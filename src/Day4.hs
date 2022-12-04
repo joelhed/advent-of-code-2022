@@ -26,7 +26,12 @@ anyFullOverlap (first, second) = fullyOverlaps first second || fullyOverlaps sec
 countTrue :: [Bool] -> Int
 countTrue = sum . map (\x -> if x then 1 else 0)
 
+-- Part 2
+partiallyOverlaps :: AssignmentPair -> Bool
+partiallyOverlaps ((start, end), (start', end')) = end >= start' && start <= end'
+
 day4 :: Day
-day4 = Day { part1 = show . countTrue . map (anyFullOverlap . parseAssignmentPair) . lines
-           , part2 = Nothing
+day4 = Day { part1 = solution anyFullOverlap
+           , part2 = Just $ solution partiallyOverlaps
            }
+       where solution overlapFunc = show . countTrue . map (overlapFunc . parseAssignmentPair) . lines
