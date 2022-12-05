@@ -48,23 +48,26 @@ assocUpdate key f assoc =
     (key, f value):filter ((/= key) . fst) assoc
     where value = fromJust $ lookup key assoc
 
-performInstruction :: Stacks -> Instruction -> Stacks
-performInstruction stacks instruction
+performInstruction :: ([Box] -> [Box]) -> Stacks -> Instruction -> Stacks
+performInstruction boxOrdering stacks instruction
     = assocUpdate from' (drop n')
     $ assocUpdate to' (\existing -> boxesToMove ++ existing)
     $ stacks
     where (Instruction n' from' to') = instruction
-          boxesToMove = reverse $ take n' $ fromJust $ lookup from' stacks
+          boxesToMove = boxOrdering $ take n' $ fromJust $ lookup from' stacks
 
-simulate :: (Stacks, [Instruction]) -> Stacks
-simulate (stacks, instructions) = foldl performInstruction stacks instructions
+simulate :: ([Box] -> [Box]) -> (Stacks, [Instruction]) -> Stacks
+simulate boxOrdering (stacks, instructions) = foldl (performInstruction boxOrdering) stacks instructions
 
 getTopBoxes :: Stacks -> [Box]
 getTopBoxes = map (head . spaceIfEmpty . snd) . sortOn fst
               where spaceIfEmpty [] = " "
                     spaceIfEmpty x = x
 
+-- Part 2
+
 day5 :: Day
-day5 = Day { part1 = getTopBoxes . simulate . parseInput
-           , part2 = Nothing
+day5 = Day { part1 = solution reverse
+           , part2 = Just $ solution id
            }
+       where solution f = getTopBoxes . simulate f . parseInput
