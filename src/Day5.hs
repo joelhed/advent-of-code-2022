@@ -31,7 +31,7 @@ parseInstruction input =
     case map (read . snd)
        $ filter ((\x -> (x `mod` (2 :: Int)) == (1 :: Int)) . fst)
        $ zip [0..]
-       $ splitOn ' ' input
+       $ words input
     of (n':from':to':_) -> Instruction n' from' to'
        _                -> error "could not parse instruction"
 
