@@ -31,7 +31,7 @@ getLatestPartSpec day =
         (Just _) -> Part2
         Nothing  -> Part1
 
-getPartSpecByNum :: Int -> PartSpec
-getPartSpecByNum 1 = Part1
-getPartSpecByNum 2 = Part2
-getPartSpecByNum _ = error "too many parts for me!"
+getPartSpecByNum :: Int -> Maybe PartSpec
+getPartSpecByNum 1 = Just Part1
+getPartSpecByNum 2 = Just Part2
+getPartSpecByNum _ = Nothing

@@ -1,4 +1,13 @@
-module Utils (pair, splitOn) where
+module Utils ( pair
+             , splitOn
+             , maybeAt
+             ) where
+
+-- (!!) but returns Maybe
+maybeAt :: Int -> [a] -> Maybe a
+maybeAt idx xs = case drop idx xs of
+    []    -> Nothing
+    (x:_) -> (Just x)
 
 -- Split a list at the appearance of a given item. This removes said item.
 splitOn :: (Eq a) => a -> [a] -> [[a]]

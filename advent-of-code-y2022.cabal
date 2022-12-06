@@ -31,6 +31,8 @@ library
       Day4
       Day5
       Day6
+      Day7
+      Days
       Lib
       Utils
   other-modules:
