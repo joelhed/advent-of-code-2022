@@ -54,5 +54,11 @@ gatherAllOutput = fst . foldl (flip $ uncurry readCommandOutput) initialState
 
 day7 :: Day
 day7 = Day { part1 = show . sum . filter (<= 100000) . map size . walkDirs . gatherAllOutput
-           , part2 = Nothing
+           , part2 = Just $ \input ->
+                 let totalDiskSpace = 70000000
+                     unusedSpaceNecessary = 30000000
+                     root = gatherAllOutput $ input
+                     unusedSpace = totalDiskSpace - size root
+                     minimumFileSize = unusedSpaceNecessary - unusedSpace
+                 in show . minimum . filter (>= minimumFileSize) . map size . walkDirs $ root
            }
