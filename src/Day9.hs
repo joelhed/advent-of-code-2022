@@ -1,4 +1,12 @@
-module Day9 (day9) where
+module Day9 ( day9
+            , State(..)
+            , Direction (..)
+            , Position
+            , headPos
+            , parseMovements
+            , initialState
+            , step
+            ) where
 
 import Data.List (foldl', nub)
 import Data.Bifunctor (bimap, first, second)
@@ -6,13 +14,12 @@ import Lib (Day (..))
 
 data Direction = U | D | L | R deriving (Show)
 type Position = (Int, Int)
-data State = State { headPos :: Position
+data State = State { rope :: [Position]
                    , tailVisited :: [Position]
                    } deriving (Show)
 
-tailPos :: State -> Position
---tailPos s@State{tailVisited=[]} = headPos s
-tailPos State{tailVisited=visited} = head visited
+headPos :: State -> Position
+headPos = head . rope
 
 parseMovements :: String -> [Direction]
 parseMovements = concatMap toDirections . lines
@@ -25,6 +32,10 @@ parseMovements = concatMap toDirections . lines
             'R' -> R
             _   -> error "unexpected direction"
 
+
+mapBoth :: (a -> b) -> (a, a) -> (b, b)
+mapBoth f = bimap f f
+
 vecAdd :: (Int, Int) -> (Int, Int) -> (Int, Int)
 vecAdd (x, y) (x', y') = (x + x', y + y')
 
@@ -35,7 +46,7 @@ vecSub :: (Int, Int) -> (Int, Int) -> (Int, Int)
 vecSub u = vecAdd u . vecScale (-1)
 
 step :: State -> Direction -> State
-step state dir = state { headPos = headPos'
+step state dir = state { rope = rope'
                        , tailVisited = tailPos':tailVisited state
                        }
     where headDelta = case dir of
@@ -44,18 +55,27 @@ step state dir = state { headPos = headPos'
                       L -> (-1,  0)
                       R -> ( 1,  0)
           headPos' = vecAdd (headPos state) headDelta
-          tailHeadVec = vecSub headPos' $ tailPos state
-          tailDelta = case bimap abs abs tailHeadVec of
-                      (2, _) -> first signum tailHeadVec
-                      (_, 2) -> second signum tailHeadVec
-                      _      -> (0, 0)
-          tailPos' = vecAdd tailDelta $ tailPos state
+          tailPos' = last rope'
+          rope' = scanl moveSection headPos' . tail . rope $ state
+          moveSection inFront this =
+            let diffVec   = vecSub inFront this
+                thisDelta = case mapBoth abs diffVec of
+                            (2, 2) -> mapBoth signum diffVec
+                            (2, _) -> first signum diffVec
+                            (_, 2) -> second signum diffVec
+                            _      -> (0, 0)
+            in vecAdd this thisDelta
 
-simulate :: [Direction] -> State
-simulate = foldl' step initialState
-    where initialState = State { headPos=(0, 0), tailVisited=[(0, 0)] }
+initialState :: Int -> State
+initialState ropeSize = State { rope = take ropeSize $ repeat (0,0)
+                              , tailVisited = []
+                              }
+
+simulate :: Int -> [Direction] -> State
+simulate ropeSize = foldl' step (initialState ropeSize)
 
 day9 :: Day
-day9 = Day { part1 = show . length . nub . tailVisited . simulate . parseMovements
-           , part2 = Nothing
+day9 = Day { part1 = solution 2
+           , part2 = Just $ solution 10
            }
+    where solution ropeSize = show . length . nub . tailVisited . simulate ropeSize . parseMovements

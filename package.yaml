@@ -43,6 +43,18 @@ library:
 executables:
   advent-of-code-y2022-exe:
     main:                Main.hs
+    other-modules:       []
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - advent-of-code-y2022
+
+  animate-day9:
+    main:                AnimateDay9.hs
+    other-modules:       []
     source-dirs:         app
     ghc-options:
     - -threaded

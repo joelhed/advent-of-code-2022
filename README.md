@@ -22,3 +22,12 @@ $ stack exec advent-of-code-y2022-exe 1 1
 # This requires you to put your session cookie in a file called `session_id`
 $ stack exec advent-of-code-y2022-exe --download
 ```
+
+## Animate day 9
+
+You can watch a console animation of the rope simulation from day 9 part 2 with the
+following command.
+
+```console
+$ stack exec animate-day9
+```
