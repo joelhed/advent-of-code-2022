@@ -3,7 +3,6 @@ module Day10 (day10) where
 import Lib
 import Data.List (isPrefixOf, mapAccumL)
 
-
 data Instruction = Noop | Addx Int deriving (Show)
 
 parseInstruction :: String -> Instruction
@@ -21,8 +20,13 @@ simulate = concat . snd . mapAccumL step 1
 
 takeEvery :: Int -> [a] -> [a]
 takeEvery n xs = case drop (n - 1) xs of
-            y:ys -> y:takeEvery n ys
-            []   -> []
+                 []   -> []
+                 y:ys -> y:takeEvery n ys
+
+splitEvery :: Int -> [a] -> [[a]]
+splitEvery n xs = case splitAt n xs of
+                  ([], _)  -> []
+                  (ys, zs) -> ys:splitEvery n zs
 
 interestingCycles :: [a] -> [a]
 interestingCycles cycles =
@@ -31,11 +35,14 @@ interestingCycles cycles =
                       y:ys -> (y, ys)
                       []   -> error "too few cycles to find anything interesting"
 
-signalStrength :: (Int, Int) -> Int
-signalStrength = uncurry (*)
+drawPixel :: (Int, State) -> Char
+drawPixel (cycleNum, spritePos) =
+    if shouldDraw then '#' else '.'
+    where currentPixel = (cycleNum - 1) `mod` 40
+          shouldDraw = abs (spritePos - currentPixel) <= 1
 
 day10 :: Day
-day10 = Day { part1 = show . sum . map signalStrength . interestingCycles . zip [1..]
-                    . simulate . map parseInstruction . lines
-            , part2 = Nothing
+day10 = Day { part1 = show . sum . map (uncurry (*)) . interestingCycles . numberedCycles
+            , part2 = Just $ unlines . splitEvery 40 . map drawPixel . numberedCycles
             }
+        where numberedCycles = zip [1..] . simulate . map parseInstruction . lines
