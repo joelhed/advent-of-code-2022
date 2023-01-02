@@ -3,7 +3,7 @@ module Day5 (day5) where
 import Data.List (transpose, sortOn, intercalate)
 import Data.Maybe (fromJust)
 import Lib
-import Utils (splitOn)
+import Utils (splitOn, assocUpdate)
 
 type Box = Char
 type Stacks = [(Int, [Box])]
@@ -42,11 +42,6 @@ parseInput input =
                                             , map parseInstruction instructionLines
                                             )
         _                                -> error "could not parse input"
-
-assocUpdate :: (Eq a) => a -> (b -> b) -> [(a, b)] -> [(a, b)]
-assocUpdate key f assoc =
-    (key, f value):filter ((/= key) . fst) assoc
-    where value = fromJust $ lookup key assoc
 
 performInstruction :: ([Box] -> [Box]) -> Stacks -> Instruction -> Stacks
 performInstruction boxOrdering stacks instruction

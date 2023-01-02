@@ -1,7 +1,10 @@
-module Utils ( pair
-             , splitOn
-             , maybeAt
-             ) where
+module Utils
+    ( pair
+    , splitOn
+    , maybeAt
+    , assocUpdate
+    ) where
+
 
 -- (!!) but returns Maybe
 maybeAt :: Int -> [a] -> Maybe a
@@ -20,3 +23,11 @@ splitOn item xs =
 
 pair :: (a -> b, a -> c) -> a -> (b, c)
 pair (f, g) x = (f x, g x)
+
+assocUpdate :: (Eq a) => a -> (b -> b) -> [(a, b)] -> [(a, b)]
+assocUpdate key f assoc =
+    (key, f value):filter ((/= key) . fst) assoc
+  where
+    value = case lookup key assoc of
+            Just x  -> x
+            Nothing -> error "key not found" 
