@@ -19,6 +19,7 @@ import Day8
 import Day9 (day9)
 import Day10
 import Day11
+import Day12
 
 days :: [Day]
 days = [ day1
@@ -32,6 +33,7 @@ days = [ day1
        , day9
        , day10
        , day11
+       , day12
        ]
 
 getDayFromDaySpec :: DaySpec -> Maybe Day
